@@ -1,0 +1,13 @@
+# Base dati generata dallo script: si ricrea con scripts/popola_db.py
+data/
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Editor e sistema
+.vscode/
+.DS_Store
