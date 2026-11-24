@@ -9,6 +9,7 @@ import sqlite3
 import sys
 import tempfile
 import unittest
+from contextlib import closing
 from datetime import date
 from pathlib import Path
 
@@ -38,13 +39,13 @@ class TestMagazzino(unittest.TestCase):
         self._cartella.cleanup()
 
     def _conta(self, tabella):
-        with sqlite3.connect(self.percorso) as conn:
+        with closing(sqlite3.connect(self.percorso)) as conn:
             return conn.execute(f"SELECT COUNT(*) FROM {tabella}").fetchone()[0]
 
     # --- dati sintetici
 
     def test_giacenze_coerenti_con_i_movimenti(self):
-        with sqlite3.connect(self.percorso) as conn:
+        with closing(sqlite3.connect(self.percorso)) as conn:
             incoerenti = conn.execute(
                 """SELECT a.codice FROM articolo a JOIN movimento m ON m.codice_articolo = a.codice
                    GROUP BY a.codice
