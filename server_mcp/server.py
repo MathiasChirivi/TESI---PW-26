@@ -35,6 +35,9 @@ DB_DEFAULT = RADICE / "data" / "magazzino.db"
 
 server = MCPServer(
     name="magazzino-valdora",
+    # L'harness avvia il server con MAGAZZINO_LOG_LEVEL=WARNING per non mescolare i log del
+    # server con l'interfaccia a riga di comando.
+    log_level=os.environ.get("MAGAZZINO_LOG_LEVEL", "INFO"),
     instructions=(
         "Tool per la gestione del magazzino di un ingrosso di ferramenta: consultare giacenze, "
         "articoli sotto scorta e movimenti; registrare carichi e scarichi; creare ordini ai fornitori. "

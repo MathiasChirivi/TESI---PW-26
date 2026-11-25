@@ -12,12 +12,16 @@ né dati aziendali riservati.
 | Base dati SQLite e script di popolamento | Fatto (Fase 1) |
 | Back-end di lettura e scrittura | Fatto (Fase 1) |
 | Server MCP con 5 tool | Fatto (Fase 2) |
-| Harness agentico | Da fare (Fase 3) |
+| Harness agentico con interfaccia a riga di comando | Fatto (Fase 3) |
+| Test dei 10 scenari | Da fare (Fase 4) |
 
 ## Requisiti
 
 - Python 3.10 o successivo
 - SDK ufficiale MCP per Python (`mcp`, versione in `requirements.txt`)
+- [Ollama](https://ollama.com) in esecuzione in locale, con almeno un modello che supporti i tool:
+  `ollama pull qwen3:4b-instruct-2507-q4_K_M` (predefinito, senza ragionamento esteso) e, per il confronto,
+  `ollama pull llama3.2:3b`
 
 ## Installazione ed esecuzione
 
@@ -32,12 +36,27 @@ pip install -r requirements.txt
 # 3. Creare e popolare la base dati (file data/magazzino.db)
 python scripts/popola_db.py
 
-# 4. Eseguire i test (back-end e server MCP)
+# 4. Eseguire i test (back-end, server MCP, ciclo agentico con modello finto)
 python -m unittest -v
 
 # 5. Provare i tool del server MCP uno per uno (su una copia della base dati)
 python scripts/prova_tool.py            # aggiungere --schemi per gli schemi JSON
 ```
+
+## Uso dell'agente
+
+```bash
+ollama serve                                   # in un terminale a parte (o app Ollama aperta)
+python -m harness                              # conversazione interattiva con qwen3:4b-instruct-2507-q4_K_M
+python -m harness --modello ollama:llama3.2:3b # stesso harness, altro modello
+python -m harness --richiesta "Cosa devo riordinare questa settimana?"
+```
+
+Opzioni: `--max-iterazioni N` (default 8), `--pensiero` (ragionamento esteso dei modelli che lo
+supportano), `--db percorso` (base dati diversa). Durante la conversazione: `/nuova` azzera il
+contesto, `/esci` termina. Prima di ogni tool di scrittura l'harness chiede conferma (`s`/`N`).
+Ogni sessione produce un log strutturato in `logs/sessione_<data_ora>.jsonl`, un evento JSON per
+riga: richieste al modello, risposte, tool invocati, parametri, risultati, conferme e token consumati.
 
 Il server MCP comunica su stdio e di norma viene avviato dall'harness. Per avviarlo a mano:
 `python -m server_mcp` (la base dati si può indicare con la variabile `MAGAZZINO_DB`).
@@ -53,7 +72,12 @@ scripts/popola_db.py    crea la base dati e la popola con dati sintetici
 magazzino/backend.py    back-end: le 5 operazioni di lettura e scrittura
 server_mcp/server.py    server MCP: espone le 5 operazioni come tool con schemi di ingresso e di uscita
 scripts/prova_tool.py   prova manuale dei tool tramite un client MCP su stdio
-tests/                  test del back-end e del server MCP
+harness/agente.py       ciclo agentico: iterazioni, arresto, errori, conferme, log
+harness/modelli.py      astrazione dal fornitore del modello (adattatore Ollama + modello finto per i test)
+harness/client_mcp.py   collegamento al server MCP e conversione dei tool
+harness/log_strutturato.py  log JSON Lines di ogni passo
+harness/cli.py          interfaccia a riga di comando
+tests/                  test del back-end, del server MCP e del ciclo agentico
 ```
 
 ## Tool del server MCP
@@ -70,3 +94,16 @@ I tool di lettura sono marcati con l'annotazione MCP `readOnlyHint`. Le operazio
 scrittura lavorano in una transazione: se un controllo fallisce (quantità non valida,
 giacenza insufficiente, articolo di un altro fornitore) non viene modificato nulla e il
 server risponde con un risultato `isError` e un messaggio in italiano.
+
+## Harness agentico
+
+| Requisito della traccia | Dove |
+| --- | --- |
+| Ciclo di esecuzione con massimo di iterazioni e condizioni di arresto esplicite | `harness/agente.py` (`esegui_turno`) |
+| Tool non disponibili, falliti o con parametri non validi | `harness/agente.py` (`_esegui_chiamata`), `harness/client_mcp.py` |
+| Conferma dell'utente prima dei tool di scrittura | `harness/agente.py` + `chiedi_conferma` in `harness/cli.py` |
+| Log strutturato di ogni passo, con token consumati | `harness/log_strutturato.py` |
+| Modello sostituibile senza modificare il resto del codice | `harness/modelli.py` (`ModelloLinguistico`, `crea_modello`) |
+
+Il ciclo agentico è scritto a mano: non si usano framework agentici. Si usano solo l'SDK
+ufficiale MCP e l'API HTTP di Ollama (con la libreria standard `urllib`).

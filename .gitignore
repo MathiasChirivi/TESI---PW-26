@@ -11,3 +11,6 @@ venv/
 # Editor e sistema
 .vscode/
 .DS_Store
+
+# Log delle sessioni dell'harness (gli estratti per il rapporto si copiano a parte)
+logs/
