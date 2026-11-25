@@ -108,7 +108,7 @@ class Magazzino:
         ricerca = ricerca.strip()
         colonne = (
             "a.codice, a.descrizione, a.categoria, a.unita_misura, a.giacenza, a.scorta_minima, "
-            "a.giacenza < a.scorta_minima AS sotto_scorta, f.ragione_sociale AS fornitore"
+            "a.giacenza < a.scorta_minima AS sotto_scorta, f.id_fornitore, f.ragione_sociale AS fornitore"
         )
         base = f"SELECT {colonne} FROM articolo a JOIN fornitore f USING (id_fornitore)"
 

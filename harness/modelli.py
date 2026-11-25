@@ -85,13 +85,14 @@ class ModelloOllama(ModelloLinguistico):
         url: str = "http://localhost:11434",
         contesto: int = 8192,
         temperatura: float = 0.0,
+        seme: int = 42,
         pensiero: bool = False,
         timeout_s: float = 300,
     ):
         self.nome = f"ollama:{modello}"
         self._modello = modello
         self._url = url.rstrip("/") + "/api/chat"
-        self._opzioni = {"num_ctx": contesto, "temperature": temperatura}
+        self._opzioni = {"num_ctx": contesto, "temperature": temperatura, "seed": seme}
         self._pensiero: bool | None = pensiero
         self._timeout = timeout_s
         self._contatore = 0

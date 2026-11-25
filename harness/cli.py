@@ -99,7 +99,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Harness agentico per il magazzino")
     parser.add_argument("--modello", default="ollama:qwen3:4b-instruct-2507-q4_K_M", help="fornitore:modello (default: ollama:qwen3:4b-instruct-2507-q4_K_M)")
     parser.add_argument("--richiesta", help="esegue una sola richiesta e termina")
-    parser.add_argument("--max-iterazioni", type=int, default=8, help="passi massimi per richiesta (default: 8)")
+    parser.add_argument("--max-iterazioni", type=int, default=10, help="passi massimi per richiesta (default: 10)")
     parser.add_argument("--pensiero", action="store_true", help="attiva il ragionamento esteso dei modelli che lo supportano")
     parser.add_argument("--db", help="base dati da usare (default: data/magazzino.db)")
     parser.add_argument("--cartella-log", default=str(RADICE / "logs"), help="cartella dei log (default: logs/)")

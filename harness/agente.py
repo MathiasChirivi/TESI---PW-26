@@ -63,7 +63,7 @@ class Agente:
         client: ClientMCP,
         log: LogStrutturato,
         conferma: FunzioneConferma,
-        max_iterazioni: int = 8,
+        max_iterazioni: int = 10,
         max_errori_consecutivi: int = 3,
     ):
         self.modello = modello

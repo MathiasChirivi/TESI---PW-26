@@ -28,7 +28,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel, Field
 
-from magazzino import ErroreMagazzino, Magazzino
+from magazzino import ArticoloNonTrovato, ErroreMagazzino, Magazzino
 
 RADICE = Path(__file__).resolve().parent.parent
 DB_DEFAULT = RADICE / "data" / "magazzino.db"
@@ -55,6 +55,9 @@ def apri_magazzino() -> Iterator[Magazzino]:
     try:
         with Magazzino(percorso) as magazzino:
             yield magazzino
+    except ArticoloNonTrovato as errore:
+        # Suggerimento per l'agente: un "codice" inesistente spesso è una descrizione.
+        raise ToolError(f"{errore} Se hai solo il nome o la descrizione, cerca il codice con giacenza_articolo.") from errore
     except ErroreMagazzino as errore:
         raise ToolError(str(errore)) from errore
 
@@ -70,6 +73,7 @@ class Articolo(BaseModel):
     giacenza: int
     scorta_minima: int
     sotto_scorta: bool
+    id_fornitore: int
     fornitore: str
 
 
@@ -190,7 +194,10 @@ def movimenti_articolo(
     ] = None,
     data_a: Annotated[str | None, Field(description="Data finale AAAA-MM-GG, inclusa. Se assente: oggi")] = None,
 ) -> StoricoMovimenti:
-    """Elenca carichi e scarichi di un articolo in un periodo, con i totali e la giacenza attuale."""
+    """Elenca carichi e scarichi di un articolo in un periodo, con i totali e la giacenza attuale.
+
+    Richiede il codice articolo: se conosci solo la descrizione, trovalo prima con giacenza_articolo.
+    """
     with apri_magazzino() as m:
         return StoricoMovimenti(**m.movimenti_articolo(codice, data_da, data_a))
 
@@ -216,7 +223,9 @@ def registra_movimento(
 ) -> MovimentoRegistrato:
     """SCRITTURA. Registra un carico o uno scarico di magazzino e aggiorna la giacenza.
 
-    Uno scarico superiore alla giacenza disponibile viene rifiutato e non modifica nulla.
+    Chiamalo direttamente: il sistema chiede conferma all'utente prima di eseguirlo.
+    Non serve controllare prima la giacenza: uno scarico superiore alla disponibilità
+    viene rifiutato dal tool e non modifica nulla.
     """
     with apri_magazzino() as m:
         return MovimentoRegistrato(**m.registra_movimento(codice, tipo, quantita, riferimento))
@@ -236,8 +245,10 @@ def crea_ordine_fornitore(
 ) -> OrdineCreato:
     """SCRITTURA. Crea un ordine a un fornitore, in stato 'creato'.
 
+    Chiamalo direttamente: il sistema chiede conferma all'utente prima di eseguirlo.
     Tutti gli articoli devono avere come fornitore abituale quello indicato; per articoli di
-    fornitori diversi servono ordini separati.
+    fornitori diversi crea ordini separati. Codice e fornitore di un articolo si trovano con
+    giacenza_articolo o articoli_sotto_scorta (campo id_fornitore).
     """
     with apri_magazzino() as m:
         return OrdineCreato(**m.crea_ordine_fornitore(id_fornitore, [r.model_dump() for r in righe]))

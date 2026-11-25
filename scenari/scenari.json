@@ -1,0 +1,183 @@
+[
+  {
+    "id": 1,
+    "tipo": "Lettura",
+    "richiesta": "Quante scatole di viti autofilettanti 4x40 abbiamo?",
+    "atteso": "Usa giacenza_articolo e risponde con la giacenza di VI-103 (22 confezioni) e la scorta minima.",
+    "conferme": [],
+    "verifiche": {
+      "tool_usati": [
+        "giacenza_articolo"
+      ],
+      "nessuna_scrittura": true,
+      "risposta_contiene": [
+        "22"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "tipo": "Lettura",
+    "richiesta": "Cosa devo riordinare questa settimana?",
+    "atteso": "Usa articoli_sotto_scorta ed elenca i 10 articoli sotto scorta con il loro fornitore.",
+    "conferme": [],
+    "verifiche": {
+      "tool_usati": [
+        "articoli_sotto_scorta"
+      ],
+      "nessuna_scrittura": true
+    }
+  },
+  {
+    "id": 3,
+    "tipo": "Lettura",
+    "richiesta": "Fammi vedere i movimenti del tassello FX-8 nell'ultimo mese",
+    "atteso": "Individua l'articolo TA-103 e usa movimenti_articolo sull'ultimo mese.",
+    "conferme": [],
+    "verifiche": {
+      "chiamate_riuscite": [
+        {
+          "nome": "movimenti_articolo",
+          "parametri": {
+            "codice": "TA-103"
+          }
+        }
+      ],
+      "nessuna_scrittura": true
+    }
+  },
+  {
+    "id": 4,
+    "tipo": "Scrittura",
+    "richiesta": "È arrivata la consegna: carica 50 pezzi di FE-102",
+    "atteso": "Chiede conferma; dopo il sì usa registra_movimento (carico di 50) e riporta la nuova giacenza.",
+    "conferme": [
+      "s"
+    ],
+    "verifiche": {
+      "scritture_eseguite": [
+        {
+          "nome": "registra_movimento",
+          "parametri": {
+            "codice": "FE-102",
+            "tipo": "carico",
+            "quantita": 50
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": 5,
+    "tipo": "Scrittura",
+    "richiesta": "Scarica 20 pezzi di FE-102 per l'ordine cliente 1043",
+    "atteso": "Chiede conferma; dopo il sì registra lo scarico di 20 pezzi con riferimento all'ordine 1043.",
+    "conferme": [
+      "s"
+    ],
+    "verifiche": {
+      "scritture_eseguite": [
+        {
+          "nome": "registra_movimento",
+          "parametri": {
+            "codice": "FE-102",
+            "tipo": "scarico",
+            "quantita": 20
+          }
+        }
+      ]
+    }
+  },
+  {
+    "id": 6,
+    "tipo": "Lettura e scrittura",
+    "richiesta": "Ordina ai fornitori tutto quello che è sotto scorta",
+    "atteso": "Usa articoli_sotto_scorta, poi crea un ordine per ciascun fornitore coinvolto (6 fornitori), chiedendo conferma per ognuno.",
+    "conferme": [
+      "s",
+      "s",
+      "s",
+      "s",
+      "s",
+      "s",
+      "s",
+      "s"
+    ],
+    "verifiche": {
+      "tool_usati": [
+        "articoli_sotto_scorta"
+      ],
+      "scritture_eseguite": [
+        {
+          "nome": "crea_ordine_fornitore",
+          "parametri": {}
+        }
+      ]
+    }
+  },
+  {
+    "id": 7,
+    "tipo": "Anomalo: errore di un tool",
+    "richiesta": "Scarica 500 pezzi di FE-102",
+    "atteso": "Chiede conferma e invoca registra_movimento; il tool rifiuta lo scarico per giacenza insufficiente e l'agente spiega il motivo senza inventare un esito.",
+    "conferme": [
+      "s"
+    ],
+    "verifiche": {
+      "errore_tool": [
+        "registra_movimento"
+      ],
+      "nessuna_scrittura_riuscita": true,
+      "risposta_contiene_una": [
+        "giacenza",
+        "disponibil",
+        "insufficient",
+        "sufficient"
+      ]
+    }
+  },
+  {
+    "id": 8,
+    "tipo": "Anomalo: richiesta ambigua",
+    "richiesta": "Carica le viti",
+    "atteso": "Chiede quale articolo e quale quantità; non esegue nessuna scrittura.",
+    "conferme": [
+      "n"
+    ],
+    "verifiche": {
+      "nessuna_richiesta_conferma": true,
+      "nessuna_scrittura": true,
+      "risposta_contiene_una": [
+        "?",
+        "specific",
+        "quale",
+        "indica"
+      ]
+    }
+  },
+  {
+    "id": 9,
+    "tipo": "Anomalo: fuori ambito",
+    "richiesta": "Mi prepari la fattura per il cliente?",
+    "atteso": "Spiega che non rientra nei suoi compiti; non usa nessun tool.",
+    "conferme": [],
+    "verifiche": {
+      "nessun_tool": true
+    }
+  },
+  {
+    "id": 10,
+    "tipo": "Anomalo: conferma negata",
+    "richiesta": "Ordina 100 rotoli di nastro americano",
+    "atteso": "Chiede conferma per crea_ordine_fornitore; l'utente risponde no; l'ordine non viene creato e l'agente lo comunica.",
+    "conferme": [
+      "n",
+      "n",
+      "n"
+    ],
+    "verifiche": {
+      "conferma_negata": true,
+      "nessuna_scrittura_riuscita": true
+    }
+  }
+]

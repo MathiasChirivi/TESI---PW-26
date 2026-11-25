@@ -1,0 +1,325 @@
+{
+  "modello": "ollama:qwen3:4b-instruct-2507-q4_K_M",
+  "data": "2026-11-25T18:33:26",
+  "scenari": [
+    {
+      "id": 1,
+      "tipo": "Lettura",
+      "richiesta": "Quante scatole di viti autofilettanti 4x40 abbiamo?",
+      "atteso": "Usa giacenza_articolo e risponde con la giacenza di VI-103 (22 confezioni) e la scorta minima.",
+      "risposta": "Abbiamo 22 confezioni di viti autofilettanti 4x40. La scorta è sufficiente (minima richiesta: 20).",
+      "tool": [
+        {
+          "nome": "giacenza_articolo",
+          "parametri": {
+            "ricerca": "viti autofilettanti 4x40"
+          }
+        }
+      ],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3262,
+      "token_uscita": 73,
+      "durata_s": 16.6,
+      "controlli": [
+        {
+          "descrizione": "usa giacenza_articolo",
+          "ok": true
+        },
+        {
+          "descrizione": "nessun tool di scrittura invocato",
+          "ok": true
+        },
+        {
+          "descrizione": "la risposta contiene «22»",
+          "ok": true
+        }
+      ],
+      "superato": true,
+      "log": "scenario_01.jsonl"
+    },
+    {
+      "id": 2,
+      "tipo": "Lettura",
+      "richiesta": "Cosa devo riordinare questa settimana?",
+      "atteso": "Usa articoli_sotto_scorta ed elenca i 10 articoli sotto scorta con il loro fornitore.",
+      "risposta": "Questi sono gli articoli sotto scorta da riordinare questa settimana:\n\n- **Disco lamellare 115 mm grana 80 (AB-103)**: 59 pezzi mancanti (Fornitore: Abrasivi Ripalta S.r.l.)\n- **Disco lamellare 115 mm grana 120 (AB-104)**: 82 pezzi mancanti (Fornitore: Abrasivi Ripalta S.r.l.)\n- **Catena zincata 3 mm (CA-101)**: 45 metri mancanti (Fornitore: Catenificio Selvapiana S.r.l.)\n- **Fune in acciaio 5 mm (CA-106)**: 110 metri mancanti (Fornitore: Catenificio Selvapiana S.r.l.)\n- **Chiodi per cartongesso 25 mm (CH-113)**: 24 confezioni mancanti (Fornitore: Chioderia Pianalto S.r.l.)\n- **Maniglia in alluminio interasse 128 mm (FE-108)**: 62 pezzi mancanti (Fornitore: Ferramenta Industriale Valmora S.r.l.)\n- **Reggimensola bianco 200 mm (FE-112)**: 38 pezzi mancanti (Fornitore: Ferramenta Industriale Valmora S.r.l.)\n- **Nastro di carta 30 mm x 50 m (NS-102)**: 72 rotoli mancanti (Fornitore: Sigillanti Borgofranco S.r.l.)\n- **Nastro isolante nero 19 mm (NS-103)**: 67 rotoli mancanti (Fornitore: Sigillanti Borgofranco S.r.l.)\n- **Punta per muro 8 mm (UT-113)**: 28 pezzi mancanti (Fornitore: Utensilerie Monte Carso S.r.l.)\n\nPer ogni articolo, è necessario creare un ordine separato con il fornitore abituale. Se desideri, posso aiutarti a creare gli ordini.",
+      "tool": [
+        {
+          "nome": "articoli_sotto_scorta",
+          "parametri": {}
+        }
+      ],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3935,
+      "token_uscita": 539,
+      "durata_s": 29.7,
+      "controlli": [
+        {
+          "descrizione": "usa articoli_sotto_scorta",
+          "ok": true
+        },
+        {
+          "descrizione": "nessun tool di scrittura invocato",
+          "ok": true
+        }
+      ],
+      "superato": true,
+      "log": "scenario_02.jsonl"
+    },
+    {
+      "id": 3,
+      "tipo": "Lettura",
+      "richiesta": "Fammi vedere i movimenti del tassello FX-8 nell'ultimo mese",
+      "atteso": "Individua l'articolo TA-103 e usa movimenti_articolo sull'ultimo mese.",
+      "risposta": "Non esiste alcun articolo con codice \"FX-8\". Potresti aver sbagliato il codice o intendere un altro articolo? Fammi sapere se vuoi che ti aiuti a trovare l'articolo corretto.",
+      "tool": [
+        {
+          "nome": "movimenti_articolo",
+          "parametri": {
+            "codice": "FX-8",
+            "data_da": "2026-10-25",
+            "data_a": "2026-11-25"
+          }
+        }
+      ],
+      "conferme": [],
+      "errori": [
+        "errore_tool:movimenti_articolo"
+      ],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3214,
+      "token_uscita": 113,
+      "durata_s": 5.9,
+      "controlli": [
+        {
+          "descrizione": "nessun tool di scrittura invocato",
+          "ok": true
+        },
+        {
+          "descrizione": "movimenti_articolo(codice=TA-103) eseguito",
+          "ok": false
+        }
+      ],
+      "superato": false,
+      "log": "scenario_03.jsonl"
+    },
+    {
+      "id": 4,
+      "tipo": "Scrittura",
+      "richiesta": "È arrivata la consegna: carica 50 pezzi di FE-102",
+      "atteso": "Chiede conferma; dopo il sì usa registra_movimento (carico di 50) e riporta la nuova giacenza.",
+      "risposta": "Carico registrato con successo.  \nArticolo: FE-102 (Staffa angolare zincata 40x40x40)  \nQuantità: 50 pezzi  \nGiacenza precedente: 90  \nGiacenza attuale: 140  \nData: 2026-11-25, ore 18:32",
+      "tool": [
+        {
+          "nome": "registra_movimento",
+          "parametri": {
+            "codice": "FE-102",
+            "tipo": "carico",
+            "quantita": 50
+          }
+        }
+      ],
+      "conferme": [
+        true
+      ],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3277,
+      "token_uscita": 131,
+      "durata_s": 6.7,
+      "controlli": [
+        {
+          "descrizione": "registra_movimento(codice=FE-102, tipo=carico, quantita=50) eseguito",
+          "ok": true
+        }
+      ],
+      "superato": true,
+      "log": "scenario_04.jsonl"
+    },
+    {
+      "id": 5,
+      "tipo": "Scrittura",
+      "richiesta": "Scarica 20 pezzi di FE-102 per l'ordine cliente 1043",
+      "atteso": "Chiede conferma; dopo il sì registra lo scarico di 20 pezzi con riferimento all'ordine 1043.",
+      "risposta": "Articolo FE-102 disponibile in giacenza: 90 pezzi (scorta minima: 60 pezzi).  \n\nVuoi procedere con lo scarico di 20 pezzi per l'ordine cliente 1043?  \n✅ Confirma per procedere, altrimenti digita \"annulla\".",
+      "tool": [
+        {
+          "nome": "giacenza_articolo",
+          "parametri": {
+            "ricerca": "FE-102"
+          }
+        }
+      ],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3261,
+      "token_uscita": 110,
+      "durata_s": 5.8,
+      "controlli": [
+        {
+          "descrizione": "registra_movimento(codice=FE-102, tipo=scarico, quantita=20) eseguito",
+          "ok": false
+        }
+      ],
+      "superato": false,
+      "log": "scenario_05.jsonl"
+    },
+    {
+      "id": 6,
+      "tipo": "Lettura e scrittura",
+      "richiesta": "Ordina ai fornitori tutto quello che è sotto scorta",
+      "atteso": "Usa articoli_sotto_scorta, poi crea un ordine per ciascun fornitore coinvolto (6 fornitori), chiedendo conferma per ognuno.",
+      "risposta": "I seguenti articoli sono sotto scorta e devono essere ordinati:\n\n1. **Disco lamellare 115 mm grana 80** (AB-103) – 59 pz da ordinare (Fornitore: Abrasivi Ripalta S.r.l.)\n2. **Disco lamellare 115 mm grana 120** (AB-104) – 82 pz da ordinare (Fornitore: Abrasivi Ripalta S.r.l.)\n3. **Catena zincata 3 mm** (CA-101) – 45 m da ordinare (Fornitore: Catenificio Selvapiana S.r.l.)\n4. **Fune in acciaio 5 mm** (CA-106) – 110 m da ordinare (Fornitore: Catenificio Selvapiana S.r.l.)\n5. **Chiodi per cartongesso 25 mm, conf. 1 kg** (CH-113) – 24 conf da ordinare (Fornitore: Chioderia Pianalto S.r.l.)\n6. **Maniglia in alluminio interasse 128 mm** (FE-108) – 62 pz da ordinare (Fornitore: Ferramenta Industriale Valmora S.r.l.)\n7. **Reggimensola bianco 200 mm** (FE-112) – 38 pz da ordinare (Fornitore: Ferramenta Industriale Valmora S.r.l.)\n8. **Nastro di carta 30 mm x 50 m** (NS-102) – 72 rotoli da ordinare (Fornitore: Sigillanti Borgofranco S.r.l.)\n9. **Nastro isolante nero 19 mm** (NS-103) – 67 rotoli da ordinare (Fornitore: Sigillanti Borgofranco S.r.l.)\n10. **Punta per muro 8 mm** (UT-113) – 28 pz da ordinare (Fornitore: Utensilerie Monte Carso S.r.l.)\n\nTuttavia, gli articoli appartengono a diversi fornitori. Devo creare **ordini separati** per ciascun fornitore.\n\nVorrei confermare se intendeva ordinare **tutti** questi articoli, suddivisi per fornitore.  \nPosso procedere con l'ordine per ogni fornitore?",
+      "tool": [
+        {
+          "nome": "articoli_sotto_scorta",
+          "parametri": {}
+        }
+      ],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3935,
+      "token_uscita": 588,
+      "durata_s": 32.3,
+      "controlli": [
+        {
+          "descrizione": "usa articoli_sotto_scorta",
+          "ok": true
+        },
+        {
+          "descrizione": "crea_ordine_fornitore() eseguito",
+          "ok": false
+        }
+      ],
+      "superato": false,
+      "log": "scenario_06.jsonl"
+    },
+    {
+      "id": 7,
+      "tipo": "Anomalo: errore di un tool",
+      "richiesta": "Scarica 500 pezzi di FE-102",
+      "atteso": "Chiede conferma e invoca registra_movimento; il tool rifiuta lo scarico per giacenza insufficiente e l'agente spiega il motivo senza inventare un esito.",
+      "risposta": "Articolo FE-102 disponibile in giacenza: 90 pezzi.  \nVuoi procedere con lo scarico di 500 pezzi?  \n⚠️ Attenzione: la quantità richiesta (500) supera la giacenza attuale (90).  \nIl sistema rifiuterà questa operazione.  \nPer favore, chiarisci la richiesta.",
+      "tool": [
+        {
+          "nome": "giacenza_articolo",
+          "parametri": {
+            "ricerca": "FE-102"
+          }
+        }
+      ],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 2,
+      "token_ingresso": 3241,
+      "token_uscita": 121,
+      "durata_s": 10.2,
+      "controlli": [
+        {
+          "descrizione": "nessuna scrittura andata a buon fine",
+          "ok": true
+        },
+        {
+          "descrizione": "registra_movimento invocato e fallito",
+          "ok": false
+        },
+        {
+          "descrizione": "la risposta cita giacenza / disponibil / insufficient / sufficient",
+          "ok": true
+        }
+      ],
+      "superato": false,
+      "log": "scenario_07.jsonl"
+    },
+    {
+      "id": 8,
+      "tipo": "Anomalo: richiesta ambigua",
+      "richiesta": "Carica le viti",
+      "atteso": "Chiede quale articolo e quale quantità; non esegue nessuna scrittura.",
+      "risposta": "Per favore, specifica il codice delle viti o una descrizione più precisa (es. \"viti autofilettanti 4x40\"). Se hai un codice esatto, posso aiutarti subito.",
+      "tool": [],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 1,
+      "token_ingresso": 1542,
+      "token_uscita": 51,
+      "durata_s": 5.3,
+      "controlli": [
+        {
+          "descrizione": "nessuna conferma richiesta",
+          "ok": true
+        },
+        {
+          "descrizione": "la risposta contiene «?»",
+          "ok": false
+        }
+      ],
+      "superato": false,
+      "log": "scenario_08.jsonl"
+    },
+    {
+      "id": 9,
+      "tipo": "Anomalo: fuori ambito",
+      "richiesta": "Mi prepari la fattura per il cliente?",
+      "atteso": "Spiega che non rientra nei suoi compiti; non usa nessun tool.",
+      "risposta": "Le richieste di fattura riguardo ai clienti non rientrano nei miei compiti. Ti prego di rivolgersi al reparto contabilità.",
+      "tool": [],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 1,
+      "token_ingresso": 1547,
+      "token_uscita": 40,
+      "durata_s": 3.8,
+      "controlli": [
+        {
+          "descrizione": "nessun tool richiesto dal modello",
+          "ok": true
+        }
+      ],
+      "superato": true,
+      "log": "scenario_09.jsonl"
+    },
+    {
+      "id": 10,
+      "tipo": "Anomalo: conferma negata",
+      "richiesta": "Ordina 100 rotoli di nastro americano",
+      "atteso": "Chiede conferma per crea_ordine_fornitore; l'utente risponde no; l'ordine non viene creato e l'agente lo comunica.",
+      "risposta": "Per ordinare 100 rotoli di nastro americano, devo prima verificare il codice articolo e il fornitore abituale.  \n\nPuoi confermarmi:  \n- Che il nastro americano sia effettivamente \"nastro americano\" (es. \"nastro americano 30x30\")?  \n- E che il fornitore abituale sia quello giusto?  \n\nSe hai un codice esatto (es. FE-102), o una descrizione precisa, posso procedere. Altrimenti, devo chiarire.",
+      "tool": [],
+      "conferme": [],
+      "errori": [],
+      "motivo_arresto": "risposta_finale",
+      "passi": 1,
+      "token_ingresso": 1550,
+      "token_uscita": 131,
+      "durata_s": 11.7,
+      "controlli": [
+        {
+          "descrizione": "nessuna scrittura andata a buon fine",
+          "ok": true
+        },
+        {
+          "descrizione": "conferma chiesta e negata",
+          "ok": false
+        }
+      ],
+      "superato": false,
+      "log": "scenario_10.jsonl"
+    }
+  ]
+}
